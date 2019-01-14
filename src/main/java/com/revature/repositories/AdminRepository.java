@@ -16,11 +16,12 @@ public interface AdminRepository extends JpaRepository<Admin, Integer> {
 
 	public Admin findByUsername(String username);
 	public Admin findByFirstname(String firstname);
-	
+	public Admin findByVerificationCode(String code);	
 	
 	@Query(value = "UPDATE admin SET approve = true WHERE id = ?1 RETURNING id", nativeQuery = true)
-	public int setapprove(int id);
+	public int setApprove(int id);
 	
+
 	
 	
 	
