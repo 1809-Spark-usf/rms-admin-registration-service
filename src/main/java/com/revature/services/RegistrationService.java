@@ -2,6 +2,7 @@ package com.revature.services;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,10 @@ public class RegistrationService {
 	
 	public Boolean registerNewAdmin(AdminDto adminDto) {
 
+		if(accountAlreadyExists(adminDto.getUsername())) {
+			return false;
+		};
+		
 		Admin admin = new Admin();
 		admin.setFirstname(adminDto.getFirstname());
 		admin.setLastname(adminDto.getLastname());
@@ -46,6 +51,23 @@ public class RegistrationService {
 	}
 	
 	/**
+	 * Checks if an account with the same email already exists.
+	 * 
+	 * @param username
+	 * @return true if the account exists, false otherwise
+	 * @author Jaron | Java-Nick-1811 | 1/14/2019
+	 */
+	private boolean accountAlreadyExists(String username) {
+		Admin admin = adminService.getByUsername(username);
+		
+		if(admin == null) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	/**
 	 * 
 	 * Sends an email to the admin with a link to click on to verify their account.
 	 * 
@@ -54,22 +76,26 @@ public class RegistrationService {
 	 */
 	@HystrixCommand(fallbackMethod = "sendEmailFallback")
 	private void sendEmail(String email, String verificationCode) {
-		VerificationEmail verificationEmail = new VerificationEmail(email, registrationUri + "registration?" + verificationCode);
+		VerificationEmail verificationEmail = new VerificationEmail(email, registrationUri + "registration/" + verificationCode);
 		new RestTemplate().postForLocation(URI.create(emailUri + "sendadminconfirmation"), verificationEmail);
 	}
 	
 	/**
 	 * 
 	 * This method will be called as a fallback method if the hystrix command to send the email fails.
-	 * This allows the user to be notified if there is a problem sending the email.
 	 * 
 	 * @param email
 	 * @param verificationCode
 	 */
 	private void sendEmailFallback(String email, String verificationCode) {
-		
+		//This is called as a fallback method if the email cannot be sent
 	}
 	
+	/**
+	 * Generate a random uuid number to be used when verifying a user.
+	 * 
+	 * @return String of uuid
+	 */
 	private String generateVerificationCode() {
 		
 		UUID uuid = UUID.randomUUID();

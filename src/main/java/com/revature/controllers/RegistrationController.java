@@ -1,5 +1,9 @@
 package com.revature.controllers;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,15 +39,23 @@ public class RegistrationController {
 	/**
 	 * Verifies an admin's email is correct when a link is clicked on in an email sent
 	 * after registering for an account. Finds admin with unique verification code and
-	 * sets the account status to be approved.
+	 * sets the account status to be approved. Also sends the admin to be stored in the
+	 * login database after the email has been verified.
+	 * 
 	 * @param verificationCode
 	 * @author Jaron | Java-Nick-1811 : 1/11/2019
 	 */
-	@GetMapping
-	public void verifyAdmin(@PathVariable String verificationCode) {
+	@GetMapping("/{code}")
+	public void verifyAdmin(@PathVariable("code") String verificationCode, HttpServletResponse response) {
 		
 		Admin adminToVerify = adminService.getByVerificationCode(verificationCode);
 		adminService.approveAccount(adminToVerify.getAdminId());
+		adminService.saveToLoginService(adminToVerify);
+		try {
+			response.sendRedirect("http://localhost:4200/adminVerified");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
