@@ -5,13 +5,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.revature.dtos.AdminDto;
 import com.revature.models.Admin;
-import com.revature.models.VerificationEmail;
 import com.revature.repositories.AdminRepository;
 
 /**
@@ -42,8 +43,12 @@ public class AdminService {
 	 * @param id
 	 * @return Admin
 	 */
-	public Admin getAdmin(Integer id) {
-		return adminRepository.findById(id).get();
+	public Admin getAdmin(Integer id) throws HttpClientErrorException {
+		Admin result =  adminRepository.findByAdminId((int)id);
+		if(result == null) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Invalid ID");
+		}
+		return result; 
 	}
 	
 	/**
@@ -55,9 +60,14 @@ public class AdminService {
 	}
 	
 	
-	public Admin getByVerificationCode(String code) {
-		return adminRepository.findByVerificationCode(code);
-	}
+	public Admin getByVerificationCode(String code) throws HttpClientErrorException {
+		Admin result = adminRepository.findByVerificationCode(code);
+		if(result == null) {
+			throw new HttpClientErrorException( HttpStatus.NOT_FOUND, "Invalid Code");
+			
+		}
+		return result; 
+	} // Mathew K 
 	
 	/**
 	 * 
