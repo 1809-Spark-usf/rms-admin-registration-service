@@ -20,7 +20,8 @@ public interface AdminRepository extends JpaRepository<Admin, Integer> {
 
 	public Admin findByUsername(String username);
 	public Admin findByFirstname(String firstname);
-	public Admin findByVerificationCode(String code);	
+	public Admin findByVerificationCode(String code);
+	public Admin findByAdminId(int id);
 	
 	@Modifying
 	@Transactional
