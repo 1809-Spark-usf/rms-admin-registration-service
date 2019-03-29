@@ -43,7 +43,7 @@ public class AdminService {
 	 * @param id
 	 * @return Admin
 	 */
-	public Admin getAdmin(Integer id) throws HttpClientErrorException {
+	public Admin getAdmin(Integer id) {
 		Admin result =  adminRepository.findByAdminId((int)id);
 		if(result == null) {
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Invalid ID");
@@ -60,7 +60,7 @@ public class AdminService {
 	}
 	
 	
-	public Admin getByVerificationCode(String code) throws HttpClientErrorException {
+	public Admin getByVerificationCode(String code) {
 		Admin result = adminRepository.findByVerificationCode(code);
 		if(result == null) {
 			throw new HttpClientErrorException( HttpStatus.NOT_FOUND, "Invalid Code");
